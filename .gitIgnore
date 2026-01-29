@@ -1,0 +1,60 @@
+# ----------------------
+# Node & Dependencies
+# ----------------------
+node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+pnpm-debug.log
+.pnpm-store
+
+# ----------------------
+# Remix.js Build Output
+# ----------------------
+# Cache interno de Remix
+.cache
+
+# Build del servidor (backend)
+build
+
+# Build del cliente (assets estáticos generados)
+publicbuild
+
+# ----------------------
+# Environment & Secrets (CRÍTICO)
+# ----------------------
+# Nunca subir claves reales al repo
+.env
+.env.production
+.env.development
+.env.local
+.env.test
+
+# Excepción Mantener el template de ejemplo para otros devs
+!env.example
+!.env.example
+
+# ----------------------
+# Testing & Coverage
+# ----------------------
+coverage
+test-results
+cypressvideos
+cypressscreenshots
+playwright-report
+blob-report
+
+# ----------------------
+# System & IDE Files
+# ----------------------
+.DS_Store
+Thumbs.db
+.idea
+.vscode
+.swp
+.swo
+
+# ----------------------
+# TypeScript
+# ----------------------
+.tsbuildinfo
