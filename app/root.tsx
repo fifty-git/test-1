@@ -1,76 +1,75 @@
-import type { LinksFunction } from "@remix-run/node";
-import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useLocation, useNavigate, Link } from "@remix-run/react";
-import tailwindStyles from "~/styles/tailwind.css";
-import globalStyles from "~/styles/global.css";
+import {
+  isRouteErrorResponse,
+  Links,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+} from "react-router";
 
-export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: tailwindStyles },
-  { rel: "stylesheet", href: globalStyles },
+import type { Route } from "./+types/root";
+import "./app.css";
+
+export const links: Route.LinksFunction = () => [
+  { rel: "preconnect", href: "https://fonts.googleapis.com" },
+  {
+    rel: "preconnect",
+    href: "https://fonts.gstatic.com",
+    crossOrigin: "anonymous",
+  },
+  {
+    rel: "stylesheet",
+    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+  },
 ];
 
-export const meta = () => ({ title: "Products CRUD" });
-
-export default function App() {
+export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
       </head>
-      <body className="min-h-screen bg-gray-50 text-slate-900">
-        <div className="container">
-          <Shell />
-          <main style={{ marginTop: 16 }}>
-            <Outlet />
-          </main>
-          <Footer />
-        </div>
+      <body>
+        {children}
         <ScrollRestoration />
         <Scripts />
-        <LiveReload />
       </body>
     </html>
   );
 }
 
-function Shell() {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const showBack = location.pathname !== "/";
-
-  return (
-    <header className="app-header">
-      <div>
-        <Link to="/" className="app-title" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
-          <div className="logo-dot" aria-hidden />
-          <div>
-            <div style={{ fontWeight: 800, color: "var(--pink-700)" }}>Fifty</div>
-            <div className="muted" style={{ fontSize: 12 }}>Productos</div>
-          </div>
-        </Link>
-      </div>
-
-      <nav style={{ display: "flex", gap: 8, alignItems: "center" }}>
-        <Link to="/" className="btn-ghost">Inicio</Link>
-        <Link to="/products" className="btn-secondary">Productos</Link>
-        {showBack ? (
-          <button onClick={() => navigate(-1)} className="back-button">
-            ← Regresar
-          </button>
-        ) : null}
-      </nav>
-    </header>
-  );
+export default function App() {
+  return <Outlet />;
 }
 
-function Footer() {
+export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+  let message = "Oops!";
+  let details = "An unexpected error occurred.";
+  let stack: string | undefined;
+
+  if (isRouteErrorResponse(error)) {
+    message = error.status === 404 ? "404" : "Error";
+    details =
+      error.status === 404
+        ? "The requested page could not be found."
+        : error.statusText || details;
+  } else if (import.meta.env.DEV && error && error instanceof Error) {
+    details = error.message;
+    stack = error.stack;
+  }
+
   return (
-    <footer className="app-footer" style={{ marginTop: 24, padding: "1rem 0" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div className="muted">© {new Date().getFullYear()} Fifty</div>
-        <div className="muted">CRUD test</div>
-      </div>
-    </footer>
+    <main className="pt-16 p-4 container mx-auto">
+      <h1>{message}</h1>
+      <p>{details}</p>
+      {stack && (
+        <pre className="w-full p-4 overflow-x-auto">
+          <code>{stack}</code>
+        </pre>
+      )}
+    </main>
   );
 }
